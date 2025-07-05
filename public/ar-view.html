@@ -1,48 +1,65 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR with Zoom & Rotate</title>
+    <title>Markerless AR with 360° Rotate & Zoom</title>
 
     <!-- A-Frame Core -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 
-    <!-- AR.js for markerless -->
+    <!-- AR.js -->
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.js"></script>
 
-    <!-- Gesture & Super-Hands -->
+    <!-- Gesture Detector -->
     <script src="https://unpkg.com/aframe-gesture-detector/dist/aframe-gesture-detector.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+
+    <!-- Touch Rotation -->
+    <script src="https://cdn.jsdelivr.net/gh/matthewbryancurtis/aframe-touch-rotation-component@master/dist/aframe-touch-rotation-component.min.js"></script>
+
+    <!-- Custom Zoom Handler -->
+    <script>
+      AFRAME.registerComponent('pinch-zoom-listener', {
+        schema: { min: { default: 0.5 }, max: { default: 3 } },
+        init: function () {
+          this.el.addEventListener('gesturestart', this.onGestureStart.bind(this));
+          this.el.addEventListener('gesturechanged', this.onGestureChanged.bind(this));
+        },
+        onGestureStart: function (e) {
+          this.initialScale = this.el.object3D.scale.x;
+        },
+        onGestureChanged: function (e) {
+          let newScale = this.initialScale * e.detail.scale;
+          newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
+          this.el.object3D.scale.set(newScale, newScale, newScale);
+        }
+      });
+    </script>
   </head>
 
   <body style="margin: 0; overflow: hidden;">
     <a-scene
       embedded
-      arjs="sourceType: webcam; debugUIEnabled: false;"
+      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
       gesture-detector
     >
       <!-- Interactive image -->
       <a-entity
         id="interactive"
+        position="0 0 -2"
         rotation="0 0 0"
         scale="1 1 1"
-        position="0 0 -2"
-        class="clickable"
+        touch-rotation
+        pinch-zoom-listener
         gesture-detector
-        super-hands
-        pinchable
-        stretchable
-        draggable
-        rotatable
       >
         <a-image
           src="overlay.png"
           width="1.5"
           height="1"
-          class="clickable"
         ></a-image>
       </a-entity>
 
+      <!-- Camera -->
       <a-entity camera look-controls></a-entity>
     </a-scene>
   </body>
