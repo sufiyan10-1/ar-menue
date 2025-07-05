@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR with 360° Rotate & Zoom</title>
+    <title>Markerless AR with 360° Rotate, Pinch + Mouse Zoom</title>
 
     <!-- A-Frame Core -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -15,21 +15,33 @@
     <!-- Touch Rotation -->
     <script src="https://cdn.jsdelivr.net/gh/matthewbryancurtis/aframe-touch-rotation-component@master/dist/aframe-touch-rotation-component.min.js"></script>
 
-    <!-- Custom Zoom Handler -->
+    <!-- Zoom Handlers -->
     <script>
-      AFRAME.registerComponent('pinch-zoom-listener', {
+      AFRAME.registerComponent('zoom-handlers', {
         schema: { min: { default: 0.5 }, max: { default: 3 } },
         init: function () {
-          this.el.addEventListener('gesturestart', this.onGestureStart.bind(this));
-          this.el.addEventListener('gesturechanged', this.onGestureChanged.bind(this));
-        },
-        onGestureStart: function (e) {
-          this.initialScale = this.el.object3D.scale.x;
-        },
-        onGestureChanged: function (e) {
-          let newScale = this.initialScale * e.detail.scale;
-          newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
-          this.el.object3D.scale.set(newScale, newScale, newScale);
+          const el = this.el;
+          this.initialScale = el.object3D.scale.x;
+
+          // Mobile pinch gesture
+          el.addEventListener('gesturestart', e => {
+            this.initialScale = el.object3D.scale.x;
+          });
+
+          el.addEventListener('gesturechanged', e => {
+            let newScale = this.initialScale * e.detail.scale;
+            newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
+            el.object3D.scale.set(newScale, newScale, newScale);
+          });
+
+          // Desktop scroll zoom
+          window.addEventListener('wheel', e => {
+            const delta = -e.deltaY * 0.001;
+            let currentScale = el.object3D.scale.x;
+            let newScale = currentScale + delta;
+            newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
+            el.object3D.scale.set(newScale, newScale, newScale);
+          });
         }
       });
     </script>
@@ -38,9 +50,9 @@
   <body style="margin: 0; overflow: hidden;">
     <a-scene
       embedded
-      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
       gesture-detector
+      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
     >
       <!-- Interactive image -->
       <a-entity
@@ -49,17 +61,16 @@
         rotation="0 0 0"
         scale="1 1 1"
         touch-rotation
-        pinch-zoom-listener
+        zoom-handlers
         gesture-detector
       >
         <a-image
           src="overlay.png"
-          width="1.5"
+          width="1"
           height="1"
         ></a-image>
       </a-entity>
 
-      <!-- Camera -->
       <a-entity camera look-controls></a-entity>
     </a-scene>
   </body>
