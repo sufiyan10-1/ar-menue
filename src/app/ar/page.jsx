@@ -5,7 +5,7 @@ export default function ARPage() {
     <iframe
       src="/ar-view.html"
       style={{
-        width: '90vw',
+        width: '100vw',
         height: '90vh',
         border: 'none',
         overflow: 'hidden',
