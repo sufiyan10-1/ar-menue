@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR with 360° Rotate, Pinch + Mouse Zoom</title>
+    <title>AR with 360° Touch & Zoom</title>
 
     <!-- A-Frame Core -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
@@ -12,35 +12,69 @@
     <!-- Gesture Detector -->
     <script src="https://unpkg.com/aframe-gesture-detector/dist/aframe-gesture-detector.min.js"></script>
 
-    <!-- Touch Rotation -->
+    <!-- Touch Rotation Component (supports X/Y rotation) -->
     <script src="https://cdn.jsdelivr.net/gh/matthewbryancurtis/aframe-touch-rotation-component@master/dist/aframe-touch-rotation-component.min.js"></script>
 
-    <!-- Zoom Handlers -->
+    <!-- Enhanced Zoom and Full 360° Rotation Handler -->
     <script>
-      AFRAME.registerComponent('zoom-handlers', {
-        schema: { min: { default: 0.5 }, max: { default: 3 } },
+      AFRAME.registerComponent('zoom-rotate-controller', {
+        schema: {
+          minScale: { default: 0.5 },
+          maxScale: { default: 3 }
+        },
         init: function () {
           const el = this.el;
-          this.initialScale = el.object3D.scale.x;
+          this.scale = 1;
+          this.rotation = { x: 0, y: 0 };
+          this.startTouches = [];
 
-          // Mobile pinch gesture
+          // Touch gestures
           el.addEventListener('gesturestart', e => {
-            this.initialScale = el.object3D.scale.x;
+            this.scaleStart = el.object3D.scale.x;
           });
 
           el.addEventListener('gesturechanged', e => {
-            let newScale = this.initialScale * e.detail.scale;
-            newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
+            let newScale = this.scaleStart * e.detail.scale;
+            newScale = Math.max(this.data.minScale, Math.min(newScale, this.data.maxScale));
             el.object3D.scale.set(newScale, newScale, newScale);
           });
 
           // Desktop scroll zoom
           window.addEventListener('wheel', e => {
             const delta = -e.deltaY * 0.001;
-            let currentScale = el.object3D.scale.x;
-            let newScale = currentScale + delta;
-            newScale = Math.max(this.data.min, Math.min(newScale, this.data.max));
-            el.object3D.scale.set(newScale, newScale, newScale);
+            this.scale = el.object3D.scale.x + delta;
+            this.scale = Math.max(this.data.minScale, Math.min(this.scale, this.data.maxScale));
+            el.object3D.scale.set(this.scale, this.scale, this.scale);
+          });
+
+          // Mouse drag for rotation (for desktop)
+          let isMouseDown = false;
+          let startX, startY;
+
+          el.sceneEl.canvas.addEventListener('mousedown', e => {
+            isMouseDown = true;
+            startX = e.clientX;
+            startY = e.clientY;
+          });
+
+          window.addEventListener('mouseup', () => {
+            isMouseDown = false;
+          });
+
+          window.addEventListener('mousemove', e => {
+            if (!isMouseDown) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            startX = e.clientX;
+            startY = e.clientY;
+
+            this.rotation.y += dx * 0.5;
+            this.rotation.x -= dy * 0.5;
+            el.object3D.rotation.set(
+              THREE.MathUtils.degToRad(this.rotation.x),
+              THREE.MathUtils.degToRad(this.rotation.y),
+              0
+            );
           });
         }
       });
@@ -54,20 +88,18 @@
       gesture-detector
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
     >
-      <!-- Interactive image -->
+      <!-- Rotatable + Zoomable Image -->
       <a-entity
         id="interactive"
         position="0 0 -2"
-        rotation="0 0 0"
         scale="1 1 1"
-        touch-rotation
-        zoom-handlers
         gesture-detector
+        zoom-rotate-controller
       >
         <a-image
           src="overlay.png"
-          width="1"
-          height="1"
+          width="1.5"
+          height="1.5"
         ></a-image>
       </a-entity>
 
