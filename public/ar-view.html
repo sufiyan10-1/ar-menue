@@ -1,105 +1,77 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR with 360° Touch & Zoom</title>
+    <title>Realistic AR with Tap-to-Place</title>
 
-    <!-- A-Frame Core -->
+    <!-- A-Frame -->
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
 
-    <!-- AR.js -->
+    <!-- AR.js for Markerless AR -->
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.js"></script>
 
     <!-- Gesture Detector -->
     <script src="https://unpkg.com/aframe-gesture-detector/dist/aframe-gesture-detector.min.js"></script>
 
-    <!-- Touch Rotation Component (supports X/Y rotation) -->
-    <script src="https://cdn.jsdelivr.net/gh/matthewbryancurtis/aframe-touch-rotation-component@master/dist/aframe-touch-rotation-component.min.js"></script>
-
-    <!-- Enhanced Zoom and Full 360° Rotation Handler -->
+    <!-- Custom Component: Tap-to-Place -->
     <script>
-      AFRAME.registerComponent('zoom-rotate-controller', {
-        schema: {
-          minScale: { default: 0.5 },
-          maxScale: { default: 3 }
-        },
+      AFRAME.registerComponent('tap-place', {
         init: function () {
-          const el = this.el;
-          this.scale = 1;
-          this.rotation = { x: 0, y: 0 };
-          this.startTouches = [];
+          const scene = this.el.sceneEl;
+          const imageEntity = document.querySelector('#placed-image');
 
-          // Touch gestures
-          el.addEventListener('gesturestart', e => {
-            this.scaleStart = el.object3D.scale.x;
-          });
-
-          el.addEventListener('gesturechanged', e => {
-            let newScale = this.scaleStart * e.detail.scale;
-            newScale = Math.max(this.data.minScale, Math.min(newScale, this.data.maxScale));
-            el.object3D.scale.set(newScale, newScale, newScale);
-          });
-
-          // Desktop scroll zoom
-          window.addEventListener('wheel', e => {
-            const delta = -e.deltaY * 0.001;
-            this.scale = el.object3D.scale.x + delta;
-            this.scale = Math.max(this.data.minScale, Math.min(this.scale, this.data.maxScale));
-            el.object3D.scale.set(this.scale, this.scale, this.scale);
-          });
-
-          // Mouse drag for rotation (for desktop)
-          let isMouseDown = false;
-          let startX, startY;
-
-          el.sceneEl.canvas.addEventListener('mousedown', e => {
-            isMouseDown = true;
-            startX = e.clientX;
-            startY = e.clientY;
-          });
-
-          window.addEventListener('mouseup', () => {
-            isMouseDown = false;
-          });
-
-          window.addEventListener('mousemove', e => {
-            if (!isMouseDown) return;
-            const dx = e.clientX - startX;
-            const dy = e.clientY - startY;
-            startX = e.clientX;
-            startY = e.clientY;
-
-            this.rotation.y += dx * 0.5;
-            this.rotation.x -= dy * 0.5;
-            el.object3D.rotation.set(
-              THREE.MathUtils.degToRad(this.rotation.x),
-              THREE.MathUtils.degToRad(this.rotation.y),
-              0
-            );
+          scene.addEventListener('click', function (e) {
+            const touchPoint = e.detail.intersection && e.detail.intersection.point;
+            if (touchPoint) {
+              imageEntity.setAttribute('position', `${touchPoint.x} ${touchPoint.y} ${touchPoint.z}`);
+              imageEntity.setAttribute('visible', 'true');
+              imageEntity.setAttribute('animation', {
+                property: 'scale',
+                to: '0.5 0.5 0.5',
+                dur: 500,
+                easing: 'easeOutElastic'
+              });
+            }
           });
         }
       });
     </script>
   </head>
 
-  <body style="margin: 0; overflow: hidden;">
+  <body style="margin: 0; overflow: hidden; touch-action: none;">
     <a-scene
       embedded
-      vr-mode-ui="enabled: false"
-      gesture-detector
+      tap-place
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+      gesture-detector
+      renderer="logarithmicDepthBuffer: true;"
     >
-      <!-- Rotatable + Zoomable Image -->
+
+      <!-- Lighting -->
+      <a-entity light="type: ambient; color: #BBB"></a-entity>
+      <a-entity light="type: directional; intensity: 0.6" position="1 1 0.5"></a-entity>
+
+      <!-- Shadow ground (optional) -->
+      <a-plane
+        rotation="-90 0 0"
+        width="20"
+        height="20"
+        color="#fff"
+        shadow
+        visible="false"
+      ></a-plane>
+
+      <!-- Tap-to-place Image (initially invisible) -->
       <a-entity
-        id="interactive"
-        position="0 0 -2"
-        scale="1 1 1"
+        id="placed-image"
+        visible="false"
+        scale="0.001 0.001 0.001"
         gesture-detector
-        zoom-rotate-controller
       >
         <a-image
-          src="overlay.png"
-          width="1.5"
-          height="1.5"
+          src="overlay.png"  <!-- Replace with transparent image -->
+          width="1"
+          height="1"
+          position="0 0 0"
         ></a-image>
       </a-entity>
 
