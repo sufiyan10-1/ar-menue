@@ -17,8 +17,8 @@
        
       })
   </script>
-  <a-scene ar>
- <a-entity camera="active: true" look-controls wasd-controls position="0 1.6 0" data-aframe-default-camera></a-entity>
+  <a-scene ar ar-logic>
+    <a-camera id="cam" ar-raycaster raycaster="objects: none;">
       <a-text
        id="hud"
        value="click here"
@@ -27,7 +27,7 @@
        wrap-count="800"
       >
       </a-text>
-   
+    </a-camera>
     <a-ring
     id="lingkaran"
     rotation="-90 0 0"
