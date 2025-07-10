@@ -8,41 +8,49 @@
   </head>
   <body style="margin: 0; overflow: hidden;">
     <script>
-      AFRAME.registerComponent('ar-logic',{
-        init: function(){
-           let hud = document.querySelector('#hud')
-           hud.setAttribute('value', 'ar-logic runing')
+      AFRAME.registerComponent('ar-logic', {
+        init: function () {
+          let hud = document.querySelector('#hud');
+          if (hud) {
+            hud.setAttribute('value', 'ar-logic running');
+          }
+        },
+        tick: function () {
+          let cam = document.querySelector("#cam");
+          if (!cam) { return; }
         }
-       
-      })
-  </script>
+      });
+    </script>
+
     <a-scene
       ar-logic
       embedded
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-     <a-entity id="cam" camera look-controls>
-      <a-text
-       id="hud"
-       value="this text will replace"
-       position="0 -0.1 -0.25"
-       align="center"
-       wrap-count="800"
-      >
-      </a-text>
-     </a-entity>
+      <a-entity id="cam" camera look-controls>
+        <a-text
+          id="hud"
+          value="this text will replace"
+          position="0 -0.1 -0.25"
+          align="center"
+          wrap-count="800"
+        ></a-text>
+      </a-entity>
 
-    <a-ring
-    id="lingkaran"
-    rotation="-90 0 0"
-    radius-inner="0.01"
-    radius-outer="0.02"
-    
-    > 
-    </a-ring>
-    
-    <a-box color="red" scale="0.2 0.2 0.2"></a-box>
+      <a-ring
+        id="lingkaran"
+        rotation="-90 0 0"
+        radius-inner="0.01"
+        radius-outer="0.02"
+        position="0 0 -1"
+      ></a-ring>
+
+      <a-box
+        color="red"
+        scale="0.2 0.2 0.2"
+        position="0 0 -1.5"
+      ></a-box>
     </a-scene>
   </body>
 </html>
