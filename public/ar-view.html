@@ -18,7 +18,7 @@
       })
   </script>
   <a-scene ar>
-   <a-entity camera look-controls position="0 1.6 0">
+ <a-entity camera="active: true" look-controls wasd-controls position="0 1.6 0" data-aframe-default-camera></a-entity>
       <a-text
        id="hud"
        value="click here"
@@ -27,7 +27,7 @@
        wrap-count="800"
       >
       </a-text>
-   </a-entity>
+   
     <a-ring
     id="lingkaran"
     rotation="-90 0 0"
