@@ -1,43 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>AR Core Exercise 1</title>
   <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@master/dist/aframe-master.min.js"></script>
   <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
 </head>
 <body>
   <script>
-      AFRAME.registerComponent('ar-logic',{
-        init: function(){
-           let hud = document.querySelector('hud')
-           hud.setAttribute('value', 'ar-logic runing')
+    AFRAME.registerComponent('ar-logic', {
+      init: function () {
+        let hud = document.querySelector('#hud');
+        if (hud) {
+          hud.setAttribute('value', 'ar-logic running');
         }
-       
-      })
+      }
+    });
   </script>
-  <a-scene ar>
-    <a-camera id="cam" ar-raycaster raycaster="objects: none;">
+
+  <a-scene embedded arjs="sourceType: webcam;" ar>
+    <a-camera id="cam">
       <a-text
-       id="hud"
-       value="click here"
-       position="0 -0.1 -0.25"
-       align="center"
-       wrap-count="800"
-      >
-      </a-text>
+        id="hud"
+        value="click here"
+        position="0 -0.1 -0.25"
+        align="center"
+        wrap-count="800"
+        ar-logic
+      ></a-text>
     </a-camera>
+
     <a-ring
-    id="lingkaran"
-    rotation="-90 0 0"
-    radius-inner="0.01"
-    radius-outer="0.02"
-    
-    > 
-    </a-ring>
-    <a-box color="red" scale="0.2 0.2 0.2"></a-box>
-  
+      id="lingkaran"
+      rotation="-90 0 0"
+      radius-inner="0.01"
+      radius-outer="0.02"
+    ></a-ring>
+
+    <a-box color="red" scale="0.2 0.2 0.2" position="0 0 -1"></a-box>
   </a-scene>
 </body>
 </html>
