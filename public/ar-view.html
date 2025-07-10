@@ -1,43 +1,55 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR with 360 Rotate</title>
+    <title>Markerless AR with Small Image</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.js"></script>
-    <script src="https://unpkg.com/aframe-gesture-detector/dist/aframe-gesture-detector.min.js"></script>
-    <script src="https://unpkg.com/aframe-super-hands-component@4.0.5/dist/aframe-super-hands.min.js"></script>
+   <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
+    <script>
+      AFRAME.registerComponent('ar-logic',{
+        init: function(){
+           let hud = document.querySelector('#hud')
+           hud.setAttribute('value', 'ar-logic runing')
+        }
+       
+      })
+  </script>
     <a-scene
+      ar-logic
       embedded
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
-      gesture-detector
     >
-      <!-- Hands for interaction -->
-      <a-entity
-        id="right-hand"
-        super-hands
-        hand-controls="hand: right"
-        laser-controls
-      ></a-entity>
-
-      <!-- Image to rotate/scale/drag -->
+      <a-text
+       id="hud"
+       value="this text will replace"
+       position="0 -0.1 -0.25"
+       align="center"
+       wrap-count="800"
+      >
+      </a-text>
+    
+    <a-ring
+    id="lingkaran"
+    rotation="-90 0 0"
+    radius-inner="0.01"
+    radius-outer="0.02"
+    
+    > 
+    </a-ring>
+    
       <a-entity
         id="interactive"
         position="0 0 -2"
         rotation="0 0 0"
         scale="1 1 1"
-        class="clickable"
-        draggable
-        rotatable
-        pinchable
-        stretchable
       >
         <a-image
           src="overlay.png"
-          width="1.5"
-          height="1"
+          width="0.3"
+          height="0.3"
         ></a-image>
       </a-entity>
 
@@ -45,3 +57,77 @@
     </a-scene>
   </body>
 </html>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR Core Exercise 1</title>
+  <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@master/dist/aframe-master.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
+</head>
+<body>
+  <script>
+      AFRAME.registerComponent('ar-logic',{
+        init: function(){
+           let hud = document.querySelector('#hud')
+           hud.setAttribute('value', 'ar-logic runing')
+        }
+       
+      })
+  </script>
+  <a-scene ar ar-logic>
+   
+      <a-text
+       id="hud"
+       value="this text will replace"
+       position="0 -0.1 -0.25"
+       align="center"
+       wrap-count="800"
+      >
+      </a-text>
+    
+    <a-ring
+    id="lingkaran"
+    rotation="-90 0 0"
+    radius-inner="0.01"
+    radius-outer="0.02"
+    
+    > 
+    </a-ring>
+    <a-box color="red" scale="0.2 0.2 0.2"></a-box>
+  <a-entity camera></a-entity>
+  </a-scene>
+
+</body>
+</html> -->
