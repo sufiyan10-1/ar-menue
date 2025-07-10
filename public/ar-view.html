@@ -1,23 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR with Small Image</title>
+    <title>Markerless AR with Collision Detection</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.2/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
     <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <script>
+      function tampilPesan(pesan){
+        let hud = document.querySelector('#hud');  
+        if (hud) hud.setAttribute('value', pesan);  
+      }
+
       AFRAME.registerComponent('ar-logic', {
-        init: function () {
-          let hud = document.querySelector('#hud');
-          if (hud) {
-            hud.setAttribute('value', 'ar-logic running');
-          }
-        },
         tick: function () {
           let cam = document.querySelector("#cam");
-          if (!cam) { return; }
+          if (!cam || !cam.components.raycaster) return;
+
+          let intersects = cam.components.raycaster.intersections;
+          if (intersects.length > 0) {
+            let point = intersects[0].point;
+            tampilPesan(`Tumbukan di x=${point.x.toFixed(3)}, z=${point.z.toFixed(3)}`);
+          } else {
+            tampilPesan("Tidak ada tumbukan");
+          }
         }
       });
     </script>
@@ -28,7 +35,12 @@
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-      <a-entity id="cam" camera look-controls>
+      <a-entity 
+        id="cam" 
+        camera 
+        look-controls 
+        raycaster="objects: .detectable; far: 10; interval: 100"
+      >
         <a-text
           id="hud"
           value="this text will replace"
@@ -39,14 +51,16 @@
       </a-entity>
 
       <a-ring
-        id="lingkaran"
+        class="detectable"
         rotation="-90 0 0"
         radius-inner="0.01"
         radius-outer="0.02"
         position="0 0 -1"
+        color="blue"
       ></a-ring>
 
       <a-box
+        class="detectable"
         color="red"
         scale="0.2 0.2 0.2"
         position="0 0 -1.5"
