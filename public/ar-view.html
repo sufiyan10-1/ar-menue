@@ -19,12 +19,8 @@
     });
   </script>
 
-  <a-scene
-    vr-mode-ui="enabled: false"
-    embedded
-    arjs="sourceType: webcam; debugUIEnabled: false;"
-  >
-    <a-camera id="cam" position="0 0 0">
+  <a-scene>
+   
       <a-text
         id="hud"
         value="click here"
@@ -33,7 +29,7 @@
         wrap-count="800"
         ar-logic
       ></a-text>
-    </a-camera>
+   
 
     <a-ring
       id="lingkaran"
@@ -43,6 +39,7 @@
     ></a-ring>
 
     <a-box color="red" scale="0.2 0.2 0.2" position="0 0 -1"></a-box>
+     <a-camera id="cam" position="0 0 0"> </a-camera>
   </a-scene>
 </body>
 </html>
