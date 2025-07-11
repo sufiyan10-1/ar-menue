@@ -1,32 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR - Show Camera Rotation</title>
+    <title>AR Camera Raycaster</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <script>
-      AFRAME.registerComponent('camera-tracker', {
+      AFRAME.registerComponent('raycast-camera-pointer', {
+        init: function () {
+          this.raycaster = this.el.components.raycaster;
+        },
         tick: function () {
-          const camera = document.querySelector('#cam');
-          const hud = document.querySelector('#hud');
-          const ring = document.querySelector('#ring');
-
-          if (camera && hud && ring) {
-            const rotation = camera.getAttribute('rotation');
-            const position = camera.getAttribute('position');
-           
-            // Display rotation in the HUD
-            const message = `Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
-            hud.setAttribute('value', message);
-
-            // Set ring position slightly in front of the camera
-            ring.setAttribute('position', {
-              x: position.x,
-              y: position.y - 1,
-              z: position.z - 2
-            });
+          const intersects = this.raycaster.intersections;
+          const dot = document.querySelector('#dot');
+          if (intersects.length > 0) {
+            const point = intersects[0].point;
+            dot.setAttribute('visible', true);
+            dot.setAttribute('position', point);
+          } else {
+            dot.setAttribute('visible', false);
           }
         }
       });
@@ -34,46 +27,110 @@
 
     <a-scene
       embedded
-      camera-tracker
-      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+      arjs="sourceType: webcam; facingMode: environment;"
       vr-mode-ui="enabled: false"
     >
-      <!-- Camera -->
-      <a-entity 
-        id="cam" 
-        camera 
-        look-controls
-      >
-        <a-text
-          id="hud"
-          value="Initializing..."
-          position="0 0 -0.5"
-          align="center"
-          width="0.3"
-          color="white"
-        ></a-text>
+      <!-- Camera with raycaster -->
+      <a-entity id="cameraRig" position="0 1.6 0">
+        <a-entity 
+          id="cam" 
+          camera 
+          look-controls 
+        >
+          <a-entity
+            raycaster="objects: .clickable; far: 100; showLine: true"
+            raycast-camera-pointer
+            position="0 0 0"
+            direction="0 0 -1"
+          ></a-entity>
+        </a-entity>
       </a-entity>
 
-      <!-- Ring that moves with the camera position -->
-      <a-ring 
-        id="ring"
-        color="teal" 
-        radius-inner="1" 
-        radius-outer="2" 
-        rotation="-90 0 0"
-        position="0 0 0"
-      ></a-ring>
-
-      <!-- Static box -->
-      <a-box
-        id="box" 
-        color="red"
+      <!-- Intersectable box -->
+      <a-box 
+        class="clickable" 
+        color="red" 
+        position="0 0 -3" 
+        depth="0.5" 
+        height="0.5" 
         width="0.5"
-        height="0.5"  <!-- Fixed typo here -->
-        scale="0.2 0.2 0.2"
-        position="0 0 -1.5"
       ></a-box>
 
+      <!-- Dot to show intersection point -->
+      <a-sphere 
+        id="dot" 
+        color="yellow" 
+        radius="0.05" 
+        visible="false"
+      ></a-sphere>
+    </a-scene>
+  </body>
+</html>
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>AR Camera Raycaster</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <script>
+      AFRAME.registerComponent('raycast-camera-pointer', {
+        init: function () {
+          this.raycaster = this.el.components.raycaster;
+        },
+        tick: function () {
+          const intersects = this.raycaster.intersections;
+          const dot = document.querySelector('#dot');
+          if (intersects.length > 0) {
+            const point = intersects[0].point;
+            dot.setAttribute('visible', true);
+            dot.setAttribute('position', point);
+          } else {
+            dot.setAttribute('visible', false);
+          }
+        }
+      });
+    </script>
+
+    <a-scene
+      embedded
+      arjs="sourceType: webcam; facingMode: environment;"
+      vr-mode-ui="enabled: false"
+    >
+      <!-- Camera with raycaster -->
+      <a-entity id="cameraRig" position="0 1.6 0">
+        <a-entity 
+          id="cam" 
+          camera 
+          look-controls 
+        >
+          <a-entity
+            raycaster="objects: .clickable; far: 100; showLine: true"
+            raycast-camera-pointer
+            position="0 0 0"
+            direction="0 0 -1"
+          ></a-entity>
+        </a-entity>
+      </a-entity>
+
+      <!-- Intersectable box -->
+      <a-box 
+        class="clickable" 
+        color="red" 
+        position="0 0 -3" 
+        depth="0.5" 
+        height="0.5" 
+        width="0.5"
+      ></a-box>
+
+      <!-- Dot to show intersection point -->
+      <a-sphere 
+        id="dot" 
+        color="yellow" 
+        radius="0.05" 
+        visible="false"
+      ></a-sphere>
     </a-scene>
   </body>
 </html>
