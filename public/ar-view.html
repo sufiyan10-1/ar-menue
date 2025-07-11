@@ -13,12 +13,17 @@
           const hud = document.querySelector('#hud');
 
           if (camera && hud) {
-            const position = camera.getAttribute('position');
-            const rotation = camera.getAttribute('rotation');
+            const worldPosition = new THREE.Vector3();
+            const worldRotation = new THREE.Euler();
 
-            const message = 
-              `📍Pos: x=${position.x.toFixed(2)}, y=${position.y.toFixed(2)}, z=${position.z.toFixed(2)}\n` +
-              `🔄Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
+            // Get world position and rotation of the camera
+            camera.object3D.getWorldPosition(worldPosition);
+            camera.object3D.getWorldRotation(worldRotation);
+
+            const message =
+              `📍Pos: x=${worldPosition.x.toFixed(2)}, y=${worldPosition.y.toFixed(2)}, z=${worldPosition.z.toFixed(2)}\n` +
+              `🔄Rot: x=${THREE.Math.radToDeg(worldRotation.x).toFixed(2)}, y=${THREE.Math.radToDeg(worldRotation.y).toFixed(2)}, z=${THREE.Math.radToDeg(worldRotation.z).toFixed(2)}`;
+
             hud.setAttribute('value', message);
           }
         }
@@ -31,6 +36,7 @@
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
+      <!-- Camera -->
       <a-entity 
         id="cam" 
         camera 
