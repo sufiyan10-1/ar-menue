@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR - Camera Rotation + Ring Follow</title>
+    <title>Markerless AR - Show Camera Position</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
   </head>
@@ -11,28 +11,15 @@
         tick: function () {
           const camera = document.querySelector('#cam');
           const hud = document.querySelector('#hud');
-          const ring = document.querySelector('#ring');
 
-          if (camera && hud && ring) {
-            const rotation = camera.getAttribute('rotation');
+          if (camera && hud) {
             const position = camera.getAttribute('position');
+            const rotation = camera.getAttribute('rotation');
 
-            // Update text HUD with rotation values
-            const message = `Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
+            const message = 
+              `📍Pos: x=${position.x.toFixed(2)}, y=${position.y.toFixed(2)}, z=${position.z.toFixed(2)}\n` +
+              `🔄Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
             hud.setAttribute('value', message);
-
-            // Compute position 1 unit in front of the camera
-            const radY = THREE.Math.degToRad(rotation.y);
-            const distance = 1;
-
-            const offsetX = -Math.sin(radY) * distance;
-            const offsetZ = -Math.cos(radY) * distance;
-
-            ring.setAttribute('position', {
-              x: position.x + offsetX,
-              y: position.y,
-              z: position.z + offsetZ
-            });
           }
         }
       });
@@ -44,13 +31,11 @@
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-      <!-- Camera -->
       <a-entity 
         id="cam" 
         camera 
         look-controls
       >
-        <!-- HUD Text -->
         <a-text
           id="hud"
           value="Initializing..."
@@ -60,26 +45,6 @@
           color="white"
         ></a-text>
       </a-entity>
-
-      <!-- Ring that follows the camera -->
-      <a-ring 
-        id="ring"
-        color="teal" 
-        radius-inner="0.1" 
-        radius-outer="0.2" 
-        rotation="-90 0 0"
-        position="0 0 -1"
-      ></a-ring>
-
-      <!-- Just a static object in the scene -->
-      <a-box
-        id="box" 
-        color="red"
-        width="0.5"
-        height="0.5"
-        depth="0.5"
-        position="0 0 -3"
-      ></a-box>
     </a-scene>
   </body>
 </html>
