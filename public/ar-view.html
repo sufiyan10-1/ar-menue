@@ -1,136 +1,25 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>AR Camera Raycaster</title>
+    <title>ARCore Markerless Example</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/AR-js-org/AR.js@3.3.2/aframe/build/aframe-ar.js"></script>
   </head>
-  <body style="margin: 0; overflow: hidden;">
-    <script>
-      AFRAME.registerComponent('raycast-camera-pointer', {
-        init: function () {
-          this.raycaster = this.el.components.raycaster;
-        },
-        tick: function () {
-          const intersects = this.raycaster.intersections;
-          const dot = document.querySelector('#dot');
-          if (intersects.length > 0) {
-            const point = intersects[0].point;
-            dot.setAttribute('visible', true);
-            dot.setAttribute('position', point);
-          } else {
-            dot.setAttribute('visible', false);
-          }
-        }
-      });
-    </script>
-
+  <body style="margin: 0; overflow: hidden">
     <a-scene
-      embedded
-      arjs="sourceType: webcam; facingMode: environment;"
       vr-mode-ui="enabled: false"
-    >
-      <!-- Camera with raycaster -->
-      <a-entity id="cameraRig" position="0 1.6 0">
-        <a-entity 
-          id="cam" 
-          camera 
-          look-controls 
-        >
-          <a-entity
-            raycaster="objects: .clickable; far: 100; showLine: true"
-            raycast-camera-pointer
-            position="0 0 0"
-            direction="0 0 -1"
-          ></a-entity>
-        </a-entity>
-      </a-entity>
-
-      <!-- Intersectable box -->
-      <a-box 
-        class="clickable" 
-        color="red" 
-        position="0 0 -3" 
-        depth="0.5" 
-        height="0.5" 
-        width="0.5"
-      ></a-box>
-
-      <!-- Dot to show intersection point -->
-      <a-sphere 
-        id="dot" 
-        color="yellow" 
-        radius="0.05" 
-        visible="false"
-      ></a-sphere>
-    </a-scene>
-  </body>
-</html>
-<!DOCTYPE html>
-<html>
-  <head>
-    <title>AR Camera Raycaster</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <script>
-      AFRAME.registerComponent('raycast-camera-pointer', {
-        init: function () {
-          this.raycaster = this.el.components.raycaster;
-        },
-        tick: function () {
-          const intersects = this.raycaster.intersections;
-          const dot = document.querySelector('#dot');
-          if (intersects.length > 0) {
-            const point = intersects[0].point;
-            dot.setAttribute('visible', true);
-            dot.setAttribute('position', point);
-          } else {
-            dot.setAttribute('visible', false);
-          }
-        }
-      });
-    </script>
-
-    <a-scene
       embedded
-      arjs="sourceType: webcam; facingMode: environment;"
-      vr-mode-ui="enabled: false"
+      arjs="sourceType: webcam; debugUIEnabled: false;"
     >
-      <!-- Camera with raycaster -->
-      <a-entity id="cameraRig" position="0 1.6 0">
-        <a-entity 
-          id="cam" 
-          camera 
-          look-controls 
-        >
-          <a-entity
-            raycaster="objects: .clickable; far: 100; showLine: true"
-            raycast-camera-pointer
-            position="0 0 0"
-            direction="0 0 -1"
-          ></a-entity>
-        </a-entity>
-      </a-entity>
+      <a-camera position="0 0 0" look-controls-enabled="false"></a-camera>
 
-      <!-- Intersectable box -->
-      <a-box 
-        class="clickable" 
-        color="red" 
-        position="0 0 -3" 
-        depth="0.5" 
-        height="0.5" 
-        width="0.5"
+      <!-- Sample object to show in AR -->
+      <a-box
+        position="0 0.5 0"
+        material="color: red;"
+        scale="0.5 0.5 0.5"
+        animation="property: rotation; to: 0 360 0; loop: true; dur: 4000"
       ></a-box>
-
-      <!-- Dot to show intersection point -->
-      <a-sphere 
-        id="dot" 
-        color="yellow" 
-        radius="0.05" 
-        visible="false"
-      ></a-sphere>
     </a-scene>
   </body>
 </html>
