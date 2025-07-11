@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Camera-Following Ring with Click Box</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <a-scene embedded arjs>
+      <!-- Camera -->
+      <a-entity id="cameraRig" camera position="0 1.6 0" look-controls wasd-controls></a-entity>
+
+      <!-- Ring that follows camera -->
+      <a-entity id="ring" geometry="primitive: ring; radiusInner: 0.1; radiusOuter: 0.2"
+                material="color: yellow; shader: flat"
+                position="0 0 -1"
+                class="clickable"
+                raycaster-listen>
+      </a-entity>
+
+      <!-- Hidden red box -->
+      <a-box id="redBox" position="0 0 -2" color="red" visible="false"></a-box>
+
+      <!-- Cursor for clicking (needed for mobile tap support) -->
+      <a-entity cursor="rayOrigin: mouse"></a-entity>
+
+      <script>
+        // Attach ring to camera
+        AFRAME.registerComponent('raycaster-listen', {
+          init: function () {
+            const el = this.el;
+            el.addEventListener('click', () => {
+              const box = document.querySelector('#redBox');
+              box.setAttribute('visible', 'true');
+            });
+          }
+        });
+
+        // Update ring to always stay in front of camera
+        AFRAME.registerComponent('follow-camera', {
+          tick: function () {
+            const camera = document.querySelector('[camera]');
+            const ring = this.el;
+
+            const camPos = camera.object3D.position;
+            const camDir = new THREE.Vector3();
+            camera.object3D.getWorldDirection(camDir);
+            camDir.multiplyScalar(1); // distance in front of camera
+            const newPos = new THREE.Vector3().copy(camPos).add(camDir);
+            ring.object3D.position.copy(newPos);
+            ring.object3D.lookAt(camPos); // face camera
+          }
+        });
+
+        document.querySelector('#ring').setAttribute('follow-camera', '');
+      </script>
+    </a-scene>
+  </body>
+</html>
