@@ -1,145 +1,72 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <title>Markerless AR with Collision Detection</title>
-    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
-    <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
-  </head>
-  <body style="margin: 0; overflow: hidden;">
-    <script>
-      function tampilPesan(pesan){
-        let hud = document.querySelector('#hud');  
-        if (hud) hud.setAttribute('value', pesan);  
-      }
-
-      AFRAME.registerComponent('ar-logic', {
-        tick: function () {
-          let cam = document.querySelector("#cam");
-          if (!cam || !cam.components.raycaster) return;
-
-          let intersects = cam.components.raycaster.intersections;
-          if (intersects.length > 0) {
-            let point = intersects[0].point;
-            tampilPesan(`Tumbukan di x=${point.x.toFixed(3)}, z=${point.z.toFixed(3)}`);
-          } else {
-            tampilPesan("Tidak ada tumbukan");
-          }
-        }
-      });
-    </script>
-
-    <a-scene
-      ar-logic
-      embedded
-      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
-      vr-mode-ui="enabled: false"
-    >
-      <a-entity 
-        id="cam" 
-        camera 
-        look-controls 
-        raycaster="objects: .detectable; far: 10; interval: 100; direction: 0 0 -1"
-        class="detectable"
-      >
-        <a-text
-          id="hud"
-          value="this text will replace"
-          position="0 0 -0.25"
-          align="center"
-          wrap-count="800"
-        ></a-text>
-      </a-entity>
-
-      <a-ring
-       
-        rotation="-90 0 0"
-        radius-inner="0.01"
-        radius-outer="0.02"
-        position="0 0 -1"
-        color="blue"
-      ></a-ring>
-
-      <a-box
-    
-        color="red"
-        scale="0.2 0.2 0.2"
-        position="0 0 -1.5"
-      ></a-box>
-    </a-scene>
-  </body>
-</html>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<!-- <!DOCTYPE html>
-<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AR Core Exercise 1</title>
-  <script src="https://cdn.jsdelivr.net/gh/aframevr/aframe@master/dist/aframe-master.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/gh/chenzlabs/aframe-ar@master/dist/aframe-ar.min.js"></script>
+  <title>Markerless AR with Collision Detection</title>
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
 </head>
-<body>
-  <script>
-      AFRAME.registerComponent('ar-logic',{
-        init: function(){
-           let hud = document.querySelector('#hud')
-           hud.setAttribute('value', 'ar-logic runing')
-        }
-       
-      })
-  </script>
-  <a-scene ar ar-logic>
-   
-      <a-text
-       id="hud"
-       value="this text will replace"
-       position="0 -0.1 -0.25"
-       align="center"
-       wrap-count="800"
-      >
-      </a-text>
-    
-    <a-ring
-    id="lingkaran"
-    rotation="-90 0 0"
-    radius-inner="0.01"
-    radius-outer="0.02"
-    
-    > 
-    </a-ring>
-    <a-box color="red" scale="0.2 0.2 0.2"></a-box>
-  <a-entity camera></a-entity>
-  </a-scene>
+<body style="margin: 0; overflow: hidden;">
+<script>
+  function tampilPesan(pesan) {
+    const hud = document.querySelector('#hud');
+    if (hud) hud.setAttribute('value', pesan);
+  }
 
+  AFRAME.registerComponent('ar-logic', {
+    tick: function () {
+      const cam = document.querySelector("#cam");
+      if (!cam || !cam.components.raycaster) return;
+
+      const intersects = cam.components.raycaster.intersections;
+      if (intersects && intersects.length > 0) {
+        const point = intersects[0].point;
+        tampilPesan(`Hit at x=${point.x.toFixed(2)}, y=${point.y.toFixed(2)}, z=${point.z.toFixed(2)}`);
+      } else {
+        tampilPesan("No intersection");
+      }
+    }
+  });
+</script>
+
+<a-scene
+  embedded
+  arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+  vr-mode-ui="enabled: false"
+>
+  <!-- Camera with raycaster and HUD -->
+  <a-entity 
+    id="cam" 
+    camera 
+    look-controls 
+    raycaster="objects: .detectable; far: 10; interval: 100"
+    ar-logic
+  >
+    <a-text
+      id="hud"
+      value="Looking..."
+      position="0 -0.1 -0.5"
+      align="center"
+      width="2"
+      color="black"
+    ></a-text>
+  </a-entity>
+
+  <!-- Detectable Objects -->
+  <a-box
+    class="detectable"
+    color="red"
+    position="0 0 -1.5"
+    scale="0.3 0.3 0.3"
+  ></a-box>
+
+  <a-ring
+    class="detectable"
+    color="blue"
+    position="0 0 -2"
+    rotation="-90 0 0"
+    radius-inner="0.1"
+    radius-outer="0.15"
+  ></a-ring>
+</a-scene>
 </body>
-</html> -->
+</html>
