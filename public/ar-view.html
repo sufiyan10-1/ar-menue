@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR - Show Camera Position</title>
+    <title>Markerless AR - Show Camera Rotation</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
   </head>
@@ -13,12 +13,8 @@
           const hud = document.querySelector('#hud');
 
           if (camera && hud) {
-            const position = camera.getAttribute('position');
             const rotation = camera.getAttribute('rotation');
-
-            const message = 
-              `📍Pos: x=${position.x.toFixed(2)}, y=${position.y.toFixed(2)}, z=${position.z.toFixed(2)}\n` +
-              `🔄Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
+            const message = `Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
             hud.setAttribute('value', message);
           }
         }
@@ -31,6 +27,7 @@
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
+      <!-- Camera -->
       <a-entity 
         id="cam" 
         camera 
@@ -41,10 +38,19 @@
           value="Initializing..."
           position="0 0 -0.5"
           align="center"
-         width="0.3"
+          width="0.3"
           color="white"
         ></a-text>
       </a-entity>
+
+      <!-- Ring placed in front of camera -->
+      <a-ring 
+        color="teal" 
+        radius-inner="1" 
+        radius-outer="2" 
+        rotation="-90 0 0"
+        position="0 0 -5"
+      ></a-ring>
     </a-scene>
   </body>
 </html>
