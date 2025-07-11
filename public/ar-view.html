@@ -9,14 +9,13 @@
     <script>
       AFRAME.registerComponent('camera-tracker', {
         tick: function () {
-          const camera = document.querySelector('#cam');
-          const hud = document.querySelector('#hud');
+          const camera = this.el; // this.el is the camera entity itself
+          const hud = camera.querySelector('#hud');
 
           if (camera && hud) {
             const worldPosition = new THREE.Vector3();
             const worldRotation = new THREE.Euler();
 
-            // Get world position and rotation of the camera
             camera.object3D.getWorldPosition(worldPosition);
             camera.object3D.getWorldRotation(worldRotation);
 
@@ -32,7 +31,6 @@
 
     <a-scene
       embedded
-      camera-tracker
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
@@ -41,6 +39,7 @@
         id="cam" 
         camera 
         look-controls
+        camera-tracker
       >
         <a-text
           id="hud"
@@ -48,7 +47,7 @@
           position="0 0 -0.5"
           align="center"
           width="0.2"
-          color="white"
+          color="yellow"
         ></a-text>
       </a-entity>
     </a-scene>
