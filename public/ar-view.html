@@ -16,6 +16,9 @@
             const rotation = camera.getAttribute('rotation');
             const message = `Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
             hud.setAttribute('value', message);
+            let ring = document.querySelector('#ring');
+            ring.setAttribute('position', rotation)
+          
           }
         }
       });
@@ -45,12 +48,24 @@
 
       <!-- Ring placed in front of camera -->
       <a-ring 
+        id="ring"
         color="teal" 
-        radius-inner="1" 
-        radius-outer="2" 
+        radius-inner="0.1" 
+        radius-outer="0.2" 
         rotation="-90 0 0"
         position="0 0 -5"
       ></a-ring>
+
+      <a-box
+        id="box" 
+        color="red"
+        width="0.5"
+        heigth="0.5"
+        scale="0.2 0.2 0.2"
+        position="0 0 -1.5"
+      ></a-box>
+
+
     </a-scene>
   </body>
 </html>
