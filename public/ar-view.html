@@ -1,72 +1,50 @@
 <!DOCTYPE html>
 <html>
-<head>
-  <title>Markerless AR with Collision Detection</title>
-  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
-  <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
-</head>
-<body style="margin: 0; overflow: hidden;">
-<script>
-  function tampilPesan(pesan) {
-    const hud = document.querySelector('#hud');
-    if (hud) hud.setAttribute('value', pesan);
-  }
+  <head>
+    <title>Markerless AR - Show Camera Position</title>
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
+  </head>
+  <body style="margin: 0; overflow: hidden;">
+    <script>
+      AFRAME.registerComponent('camera-tracker', {
+        tick: function () {
+          const camera = document.querySelector('#cam');
+          const hud = document.querySelector('#hud');
 
-  AFRAME.registerComponent('ar-logic', {
-    tick: function () {
-      const cam = document.querySelector("#cam");
-      if (!cam || !cam.components.raycaster) return;
+          if (camera && hud) {
+            const position = camera.getAttribute('position');
+            const rotation = camera.getAttribute('rotation');
 
-      const intersects = cam.components.raycaster.intersections;
-      if (intersects && intersects.length > 0) {
-        const point = intersects[0].point;
-        tampilPesan(`Hit at x=${point.x.toFixed(2)}, y=${point.y.toFixed(2)}, z=${point.z.toFixed(2)}`);
-      } else {
-        tampilPesan("No intersection");
-      }
-    }
-  });
-</script>
+            const message = 
+              `📍Pos: x=${position.x.toFixed(2)}, y=${position.y.toFixed(2)}, z=${position.z.toFixed(2)}\n` +
+              `🔄Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
+            hud.setAttribute('value', message);
+          }
+        }
+      });
+    </script>
 
-<a-scene
-  embedded
-  arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
-  vr-mode-ui="enabled: false"
->
-  <!-- Camera with raycaster and HUD -->
-  <a-entity 
-    id="cam" 
-    camera 
-    look-controls 
-    raycaster="objects: .detectable; far: 10; interval: 100"
-    ar-logic
-  >
-    <a-text
-      id="hud"
-      value="Looking..."
-      position="0 -0.1 -0.5"
-      align="center"
-      width="2"
-      color="black"
-    ></a-text>
-  </a-entity>
-
-  <!-- Detectable Objects -->
-  <a-box
-    class="detectable"
-    color="red"
-    position="0 0 -1.5"
-    scale="0.3 0.3 0.3"
-  ></a-box>
-
-  <a-ring
-    class="detectable"
-    color="blue"
-    position="0 0 -2"
-    rotation="-90 0 0"
-    radius-inner="0.1"
-    radius-outer="0.15"
-  ></a-ring>
-</a-scene>
-</body>
+    <a-scene
+      embedded
+      camera-tracker
+      arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
+      vr-mode-ui="enabled: false"
+    >
+      <a-entity 
+        id="cam" 
+        camera 
+        look-controls
+      >
+        <a-text
+          id="hud"
+          value="Initializing..."
+          position="0 0 -0.5"
+          align="center"
+         width="0.3"
+          color="white"
+        ></a-text>
+      </a-entity>
+    </a-scene>
+  </body>
 </html>
