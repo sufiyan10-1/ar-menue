@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR - Show Camera Rotation</title>
+    <title>Markerless AR - Camera Rotation + Ring Follow</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
   </head>
@@ -11,14 +11,28 @@
         tick: function () {
           const camera = document.querySelector('#cam');
           const hud = document.querySelector('#hud');
+          const ring = document.querySelector('#ring');
 
-          if (camera && hud) {
+          if (camera && hud && ring) {
             const rotation = camera.getAttribute('rotation');
+            const position = camera.getAttribute('position');
+
+            // Update text HUD with rotation values
             const message = `Rot: x=${rotation.x.toFixed(2)}, y=${rotation.y.toFixed(2)}, z=${rotation.z.toFixed(2)}`;
             hud.setAttribute('value', message);
-            let ring = document.querySelector('#ring');
-            ring.setAttribute('position', rotation)
-          
+
+            // Compute position 1 unit in front of the camera
+            const radY = THREE.Math.degToRad(rotation.y);
+            const distance = 1;
+
+            const offsetX = -Math.sin(radY) * distance;
+            const offsetZ = -Math.cos(radY) * distance;
+
+            ring.setAttribute('position', {
+              x: position.x + offsetX,
+              y: position.y,
+              z: position.z + offsetZ
+            });
           }
         }
       });
@@ -36,36 +50,36 @@
         camera 
         look-controls
       >
+        <!-- HUD Text -->
         <a-text
           id="hud"
           value="Initializing..."
           position="0 0 -0.5"
           align="center"
-          width="0.3"
+          width="0.2"
           color="white"
         ></a-text>
       </a-entity>
 
-      <!-- Ring placed in front of camera -->
+      <!-- Ring that follows the camera -->
       <a-ring 
         id="ring"
         color="teal" 
-        radius-inner="1" 
-        radius-outer="2" 
+        radius-inner="0.1" 
+        radius-outer="0.2" 
         rotation="-90 0 0"
-        position="0 0 -5"
+        position="0 0 -1"
       ></a-ring>
 
+      <!-- Just a static object in the scene -->
       <a-box
         id="box" 
         color="red"
         width="0.5"
-        heigth="0.5"
-        scale="0.2 0.2 0.2"
-        position="0 0 -1.5"
+        height="0.5"
+        depth="0.5"
+        position="0 0 -3"
       ></a-box>
-
-
     </a-scene>
   </body>
 </html>
