@@ -1,29 +1,26 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Markerless AR - Show Camera Position</title>
+    <title>AR Camera Raycaster</title>
     <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
     <script src="https://cdn.rawgit.com/jeromeetienne/ar.js/1.7.0/aframe/build/aframe-ar.js"></script>
   </head>
   <body style="margin: 0; overflow: hidden;">
     <script>
-      AFRAME.registerComponent('camera-tracker', {
+      AFRAME.registerComponent('raycast-checker', {
         tick: function () {
-          const camera = this.el; // this.el is the camera entity itself
-          const hud = camera.querySelector('#hud');
+          const camera = document.querySelector('#cam');
+          const hud = document.querySelector('#hud');
 
-          if (camera && hud) {
-            const worldPosition = new THREE.Vector3();
-            const worldRotation = new THREE.Euler();
+          if (!camera || !camera.components.raycaster || !hud) return;
 
-            camera.object3D.getWorldPosition(worldPosition);
-            camera.object3D.getWorldRotation(worldRotation);
+          const intersects = camera.components.raycaster.intersections;
 
-            const message =
-              `📍Pos: x=${worldPosition.x.toFixed(2)}, y=${worldPosition.y.toFixed(2)}, z=${worldPosition.z.toFixed(2)}\n` +
-              `🔄Rot: x=${THREE.Math.radToDeg(worldRotation.x).toFixed(2)}, y=${THREE.Math.radToDeg(worldRotation.y).toFixed(2)}, z=${THREE.Math.radToDeg(worldRotation.z).toFixed(2)}`;
-
-            hud.setAttribute('value', message);
+          if (intersects.length > 0) {
+            const point = intersects[0].point;
+            hud.setAttribute('value', `👁️ Hit at x=${point.x.toFixed(2)}, y=${point.y.toFixed(2)}, z=${point.z.toFixed(2)}`);
+          } else {
+            hud.setAttribute('value', `❌ No intersection`);
           }
         }
       });
@@ -31,25 +28,30 @@
 
     <a-scene
       embedded
+      raycast-checker
       arjs="sourceType: webcam; facingMode: environment; debugUIEnabled: false;"
       vr-mode-ui="enabled: false"
     >
-      <!-- Camera -->
+      <!-- Camera with raycaster -->
       <a-entity 
         id="cam" 
         camera 
         look-controls
-        camera-tracker
+        raycaster="objects: .detectable; far: 10"
       >
         <a-text
           id="hud"
-          value="Initializing..."
+          value="Waiting..."
           position="0 0 -0.5"
           align="center"
-          width="0.2"
-          color="yellow"
+          width="1.5"
+          color="white"
         ></a-text>
       </a-entity>
+
+      <!-- Detectable objects -->
+      <a-box class="detectable" position="0 0 -2" color="red" depth="0.5" height="0.5" width="0.5"></a-box>
+      <a-sphere class="detectable" position="1 0 -3" radius="0.3" color="blue"></a-sphere>
     </a-scene>
   </body>
 </html>
